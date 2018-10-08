@@ -15,7 +15,7 @@ pub fn resolve_url(url: &str, lang: &str) -> Result<String, Error> {
         .timeout(Duration::from_secs(3)) // per read/write op
         .build()?;
 
-    let resp = client.get(url)
+    let mut resp = client.get(url)
         .header(USER_AGENT, "url-bot-rs/0.1")
         .header(ACCEPT_LANGUAGE, lang)
         .send()?
@@ -23,7 +23,7 @@ pub fn resolve_url(url: &str, lang: &str) -> Result<String, Error> {
 
     // Download up to 100KB
     let mut body = Vec::new();
-    resp.take(100 * 1024).read_to_end(&mut body)?;
+    resp.read_to_end(&mut body)?;
 
     let contents = String::from_utf8_lossy(&body);
 
