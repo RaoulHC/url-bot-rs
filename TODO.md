@@ -14,6 +14,10 @@
     [14:19:39] <kristerman> https://botw.ticketline.co.uk/order/tickets/13336481/kamaal-williams-at-gorilla-manchester-gorilla-2018-11-06-19-30-00
     [14:19:40] <wall-e> ⤷ Browser cookies are required | Band On The Wall Ticketlin
 
+    <poppy> this bag of grated cheese https://www.sainsburys.co.uk/webapp/wcs/stores/servlet/gb/groceries/sainsburys-british-mature-grated-cheddar-500g
+    <wall-e> ⤷ Sainsbury's - Please enable cookies or JavaScript
+
+
 # Extra features
 
  - MIME matching, image metadata
@@ -27,6 +31,7 @@
  - Nick ignore list
  - Lua plugins
  - Reconnect after network dropout
+ - Send notices
 
 # Tests
 
