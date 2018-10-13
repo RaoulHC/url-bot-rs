@@ -20,7 +20,7 @@ pub fn resolve_url(url: &str, lang: &str, conf: &ConfOpts) -> Result<String, Err
         .timeout(Duration::from_secs(10)) // per read/write op
         .build()?;
 
-    let resp = client.get(url)
+    let mut resp = client.get(url)
         .header(USER_AGENT, "url-bot-rs/0.1")
         .header(ACCEPT_LANGUAGE, lang)
         .send()?
@@ -47,7 +47,7 @@ pub fn resolve_url(url: &str, lang: &str, conf: &ConfOpts) -> Result<String, Err
         },
         None => DOWNLOAD_SIZE,
     };
-    resp.take(bytes).read_to_end(&mut body)?;
+    resp.read_to_end(&mut body)?;
     let contents = String::from_utf8_lossy(&body);
 
     // Get title or metadata
