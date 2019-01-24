@@ -1,9 +1,14 @@
 language: rust
 cache: cargo
 
-env: RUSTFLAGS="--cfg procmacro2_semver_exempt" # required for cargo-tarpaulin
-
-after_success:
-  - cargo install cargo-tarpaulin || echo "cargo-tarpaulin already installed"
-  - cargo tarpaulin --out Xml
-  - bash <(curl -s https://codecov.io/bash) -X gcov
+matrix:
+  stable:
+    rust: stable
+  coverage:
+    env: RUSTFLAGS="--cfg procmacro2_semver_exempt"
+    before_script: cargo install cargo-tarpaulin || echo "cargo-tarpaulin already installed"
+    script: cargo tarpaulin --out Xml
+    after_success: bash <(curl -s https://codecov.io/bash) -X gcov
+  allow_failures:
+    - name: coverage
+  fast_finish: true
