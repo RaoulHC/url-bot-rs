@@ -36,6 +36,8 @@ unicode-segmentation = "1.2.1"
 toml = "0.4.8"
 image = "0.20.0"
 directories = "1.0.2"
+log = "0.4.6"
+stderrlog = "0.4.1"
 
 [package.metadata.deb]
 extended-description = """\
@@ -46,5 +48,6 @@ assets = [
     ["example.config.toml", "usr/share/doc/url-bot-rs/", "644"],
     ["url-bot-rs.1", "usr/local/share/man/man1/", "644"],
     ["systemd/url-bot-rs.service", "lib/systemd/system/", "644"],
-    ["target/release/url-bot-rs", "usr/bin/", "755"]
+    ["target/release/url-bot-rs", "usr/bin/", "755"],
+    ["target/release/url-bot-rs-get", "usr/bin/", "755"]
 ]
