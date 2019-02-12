@@ -4,7 +4,9 @@ use itertools::Itertools;
 use regex::Regex;
 use failure::Error;
 use reqwest::Client;
-use reqwest::header::{USER_AGENT, ACCEPT_LANGUAGE, CONTENT_TYPE, CONTENT_LENGTH};
+use reqwest::header::{
+    USER_AGENT, ACCEPT_LANGUAGE, CONTENT_TYPE, CONTENT_LENGTH, ACCEPT_ENCODING
+};
 use std::io::Read;
 use image::{gif, jpeg, png, ImageDecoder};
 use mime::{Mime, IMAGE, TEXT, HTML};
@@ -18,11 +20,13 @@ pub fn resolve_url(url: &str, rtd: &Rtd) -> Result<String, Error> {
 
     let client = Client::builder()
         .timeout(Duration::from_secs(10)) // per read/write op
+        .gzip(false)
         .build()?;
 
     let resp = client.get(url)
         .header(USER_AGENT, rtd.conf.params.user_agent.as_str())
         .header(ACCEPT_LANGUAGE, rtd.conf.params.accept_lang.as_str())
+        .header(ACCEPT_ENCODING, "identity")
         .send()?
         .error_for_status()?;
 
@@ -267,7 +271,7 @@ mod tests {
             Header::from_bytes("user-agent", "Mozilla/5.0").unwrap(),
             Header::from_bytes("accept", "*/*").unwrap(),
             Header::from_bytes("accept-language", "en").unwrap(),
-            Header::from_bytes("accept-encoding", "gzip").unwrap(),
+            Header::from_bytes("accept-encoding", "identity").unwrap(),
             Header::from_bytes("host", "0.0.0.0:28282").unwrap(),
         ];
 
