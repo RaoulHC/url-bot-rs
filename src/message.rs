@@ -15,12 +15,9 @@ pub fn handle_message(
 
     // match on message type
     match message.command {
-        Command::KICK(ref chanlist, ref userlist, ref comment) => {
-            kick(client, rtd, db, target, msg)
+        Command::KICK(ref clist, _ulist, _comm) => kick(client, rtd, clist)
         },
-        Command::INVITE(ref nick, ref chan) => {
-            invite(client, rtd, db, target, msg)
-        },
+        Command::INVITE(ref nick, ref chan) => invite(client, rtd, chan),
         Command::PRIVMSG(ref target, ref msg) => {
             privmsg(client, rtd, db, target, msg)
         },
