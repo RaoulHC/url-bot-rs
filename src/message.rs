@@ -15,9 +15,8 @@ pub fn handle_message(
 
     // match on message type
     match message.command {
-        Command::KICK(ref clist, _ulist, _comm) => kick(client, rtd, clist)
-        },
-        Command::INVITE(ref nick, ref chan) => invite(client, rtd, chan),
+        Command::KICK(ref chan, ref nick, _) => kick(client, rtd, chan, nick),
+        Command::INVITE(ref nick, ref chan) => invite(client, rtd, nick, chan),
         Command::PRIVMSG(ref target, ref msg) => {
             privmsg(client, rtd, db, target, msg)
         },
@@ -27,10 +26,15 @@ pub fn handle_message(
 
 /*
 TRACE - KICK("#music-test-sandbox", "wall-e-test", Some("ed"))
+TRACE - KICK("#music-test-sandbox", "test", Some("ed"))
+TRACE - KICK("#music-test-sandbox", "wall-e-test2", Some("test"))
 */
 
-fn kick(client: &IrcClient, rtd: &Rtd, channel: &str, user: &str) {
-    info!("left channel: {}", channel, user);
+fn kick(client: &IrcClient, rtd: &Rtd, chan: &str, nick: &str) {
+    if !rtd.conf.features.allow_invites { return; }
+    if nick != client.current_nickname() { return; }
+
+    info!("kicked from channel: {}", chan);
 
     rtd::add_channel();
     rtd::write();
@@ -42,11 +46,23 @@ fn kick(client: &IrcClient, rtd: &Rtd, channel: &str, user: &str) {
 TRACE - INVITE("wall-e-test", "#test")
 */
 
-fn invite(client: &IrcClient, rtd: &Rtd, chanlist: &str) {
-    info!("joining channel: {}", channel, user);
+fn invite(client: &IrcClient, rtd: &Rtd, nick: &str, chan: &str) {
+    if !rtd.conf.features.allow_invites {
+        return;
+    }
+    if nick != client.current_nickname() {
+        return;
+    }
 
-    client.send_join(chanlist).unwrap()
-    
+    info!("invited to channel: {}", channel);
+
+    client.send_join(chanlist).unwrap_or_else(|err| {
+        error!("error joining channel: {}", err);
+        return;
+    })
+
+    info!("joined successfully");
+
     rtd::remove_channel();
     rtd::write();
 
