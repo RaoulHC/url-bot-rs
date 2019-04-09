@@ -8,6 +8,24 @@ use super::http::resolve_url;
 use super::sqlite::{Database, NewLogEntry};
 use super::config::Rtd;
 
+/*
+TRACE - INVITE("wall-e-test", "#test")
+TRACE - KICK("#music-test-sandbox", "wall-e-test", Some("ed"))
+*/
+
+fn join_chan() {
+
+
+    rtd::join_chan();
+    rtd::write();
+}
+
+fn leave_chan() {
+
+    rtd::part_chan();
+    rtd::write();
+}
+
 pub fn handle_message(
     client: &IrcClient, message: &Message, rtd: &Rtd, db: &Database
 ) {
@@ -16,6 +34,8 @@ pub fn handle_message(
     // match on message type
     let (target, msg) = match message.command {
         Command::PRIVMSG(ref target, ref msg) => (target, msg),
+        Command::INVITE => 
+        Command::KICK => 
         _ => return,
     };
 
