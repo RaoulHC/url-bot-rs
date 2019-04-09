@@ -8,37 +8,57 @@ use super::http::resolve_url;
 use super::sqlite::{Database, NewLogEntry};
 use super::config::Rtd;
 
-/*
-TRACE - INVITE("wall-e-test", "#test")
-TRACE - KICK("#music-test-sandbox", "wall-e-test", Some("ed"))
-*/
-
-fn join_chan() {
-
-
-    rtd::join_chan();
-    rtd::write();
-}
-
-fn leave_chan() {
-
-    rtd::part_chan();
-    rtd::write();
-}
-
 pub fn handle_message(
     client: &IrcClient, message: &Message, rtd: &Rtd, db: &Database
 ) {
     trace!("{:?}", message.command);
 
     // match on message type
-    let (target, msg) = match message.command {
-        Command::PRIVMSG(ref target, ref msg) => (target, msg),
-        Command::INVITE => 
-        Command::KICK => 
+    match message.command {
+        Command::KICK(ref chanlist, ref userlist, ref comment) => {
+            kick(client, rtd, db, target, msg)
+        },
+        Command::INVITE(ref nick, ref chan) => {
+            invite(client, rtd, db, target, msg)
+        },
+        Command::PRIVMSG(ref target, ref msg) => {
+            privmsg(client, rtd, db, target, msg)
+        },
         _ => return,
     };
+}
 
+/*
+TRACE - KICK("#music-test-sandbox", "wall-e-test", Some("ed"))
+*/
+
+fn kick(client: &IrcClient, rtd: &Rtd, channel: &str, user: &str) {
+    info!("left channel: {}", channel, user);
+
+    rtd::add_channel();
+    rtd::write();
+
+    info!("configuration saved");
+}
+
+/*
+TRACE - INVITE("wall-e-test", "#test")
+*/
+
+fn invite(client: &IrcClient, rtd: &Rtd, chanlist: &str) {
+    info!("joining channel: {}", channel, user);
+
+    client.send_join(chanlist).unwrap()
+    
+    rtd::remove_channel();
+    rtd::write();
+
+    info!("configuration saved");
+}
+
+fn privmsg(
+    client: &IrcClient, rtd: &Rtd, db: &Database, target: &str, msg: &str
+) {
     let is_chanmsg = target.starts_with('#');
     let user = message.source_nickname().unwrap();
     let mut num_processed = 0;
