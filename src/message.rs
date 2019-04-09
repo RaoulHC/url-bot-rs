@@ -18,7 +18,7 @@ pub fn handle_message(
         Command::KICK(ref chan, ref nick, _) => kick(client, rtd, chan, nick),
         Command::INVITE(ref nick, ref chan) => invite(client, rtd, nick, chan),
         Command::PRIVMSG(ref target, ref msg) => {
-            privmsg(client, rtd, db, target, msg)
+            privmsg(client, message, rtd, db, target, msg)
         },
         _ => return,
     };
@@ -31,13 +31,13 @@ TRACE - KICK("#music-test-sandbox", "wall-e-test2", Some("test"))
 */
 
 fn kick(client: &IrcClient, rtd: &Rtd, chan: &str, nick: &str) {
-    if !rtd.conf.features.allow_invites { return; }
+    //if !rtd.conf.features.allow_invites { return; }
     if nick != client.current_nickname() { return; }
 
     info!("kicked from channel: {}", chan);
 
-    rtd::add_channel();
-    rtd::write();
+    //rtd::add_channel();
+    //rtd::write();
 
     info!("configuration saved");
 }
@@ -47,30 +47,30 @@ TRACE - INVITE("wall-e-test", "#test")
 */
 
 fn invite(client: &IrcClient, rtd: &Rtd, nick: &str, chan: &str) {
-    if !rtd.conf.features.allow_invites {
-        return;
-    }
+//    if !rtd.conf.features.allow_invites {
+//        return;
+//    }
     if nick != client.current_nickname() {
         return;
     }
 
-    info!("invited to channel: {}", channel);
+    info!("invited to channel: {}", chan);
 
-    client.send_join(chanlist).unwrap_or_else(|err| {
+    client.send_join(chan).unwrap_or_else(|err| {
         error!("error joining channel: {}", err);
         return;
-    })
+    });
 
     info!("joined successfully");
 
-    rtd::remove_channel();
-    rtd::write();
+    //rtd::remove_channel();
+    //rtd::write();
 
     info!("configuration saved");
 }
 
 fn privmsg(
-    client: &IrcClient, rtd: &Rtd, db: &Database, target: &str, msg: &str
+    client: &IrcClient, message: &Message, rtd: &Rtd, db: &Database, target: &str, msg: &str
 ) {
     let is_chanmsg = target.starts_with('#');
     let user = message.source_nickname().unwrap();
