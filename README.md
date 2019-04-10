@@ -68,6 +68,8 @@ operation, specified in the `[features]` section:
 - `report_mime` (bool) if enabled, causes mime types to be reported, if no
   other title or metadata is found.
 - `history` (bool) enable previous post information using a database
+- `invite` (bool) if enabled `/invite` will cause the bot to join a channel,
+  this is automatically added to the configuration file for next time
 
 The `[parameters]` section includes a number of tunable parameters:
 

@@ -8,12 +8,9 @@ use super::http::resolve_url;
 use super::sqlite::{Database, NewLogEntry};
 use super::config::Rtd;
 
-pub fn handle_message(
-    client: &IrcClient, message: &Message, rtd: &Rtd, db: &Database
-) {
+pub fn handle_message(client: &IrcClient, message: &Message, rtd: &mut Rtd, db: &Database) {
     trace!("{:?}", message.command);
 
-    // match on message type
     match message.command {
         Command::KICK(ref chan, ref nick, _) => kick(client, rtd, chan, nick),
         Command::INVITE(ref nick, ref chan) => invite(client, rtd, nick, chan),
@@ -24,32 +21,26 @@ pub fn handle_message(
     };
 }
 
-/*
-TRACE - KICK("#music-test-sandbox", "wall-e-test", Some("ed"))
-TRACE - KICK("#music-test-sandbox", "test", Some("ed"))
-TRACE - KICK("#music-test-sandbox", "wall-e-test2", Some("test"))
-*/
-
-fn kick(client: &IrcClient, rtd: &Rtd, chan: &str, nick: &str) {
-    //if !rtd.conf.features.allow_invites { return; }
-    if nick != client.current_nickname() { return; }
+fn kick(client: &IrcClient, rtd: &mut Rtd, chan: &str, nick: &str) {
+    if !rtd.conf.features.invite {
+        return;
+    }
+    if nick != client.current_nickname() {
+        return;
+    }
 
     info!("kicked from channel: {}", chan);
 
-    //rtd::add_channel();
-    //rtd::write();
+    &rtd.conf.remove_channel(chan.to_string());
+    &rtd.conf.write(&rtd.paths.conf);
 
     info!("configuration saved");
 }
 
-/*
-TRACE - INVITE("wall-e-test", "#test")
-*/
-
-fn invite(client: &IrcClient, rtd: &Rtd, nick: &str, chan: &str) {
-//    if !rtd.conf.features.allow_invites {
-//        return;
-//    }
+fn invite(client: &IrcClient, rtd: &mut Rtd, nick: &str, chan: &str) {
+    if !rtd.conf.features.invite {
+        return;
+    }
     if nick != client.current_nickname() {
         return;
     }
@@ -63,8 +54,8 @@ fn invite(client: &IrcClient, rtd: &Rtd, nick: &str, chan: &str) {
 
     info!("joined successfully");
 
-    //rtd::remove_channel();
-    //rtd::write();
+    rtd.conf.add_channel(chan.to_string());
+    rtd.conf.write(&rtd.paths.conf);
 
     info!("configuration saved");
 }
