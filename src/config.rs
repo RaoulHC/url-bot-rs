@@ -78,7 +78,7 @@ impl Conf {
     }
 
     /// write configuration to a file
-    pub fn write(self, path: impl AsRef<Path>) -> Result<(), Error> {
+    pub fn write(&self, path: impl AsRef<Path>) -> Result<(), Error> {
         let mut file = File::create(path)?;
         file.write_all(toml::ser::to_string(&self)?.as_bytes())?;
         Ok(())
