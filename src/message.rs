@@ -25,6 +25,9 @@ fn kick(client: &IrcClient, rtd: &mut Rtd, chan: &str, nick: &str) {
     if !rtd.conf.features.invite {
         return;
     }
+    if !rtd.conf.features.autosave {
+        return;
+    }
     if nick != client.current_nickname() {
         return;
     }
@@ -57,6 +60,10 @@ fn invite(client: &IrcClient, rtd: &mut Rtd, nick: &str, chan: &str) {
 
     info!("joined successfully");
 
+    if !rtd.conf.features.autosave {
+        return;
+    }
+
     rtd.conf.add_channel(chan.to_string());
     rtd.conf.write(&rtd.paths.conf).unwrap_or_else(|err| {
         error!("error writing config: {}", err);
@@ -66,9 +73,7 @@ fn invite(client: &IrcClient, rtd: &mut Rtd, nick: &str, chan: &str) {
     info!("configuration saved");
 }
 
-fn privmsg(
-    client: &IrcClient, message: &Message, rtd: &Rtd, db: &Database, target: &str, msg: &str
-) {
+fn privmsg(client: &IrcClient, message: &Message, rtd: &Rtd, db: &Database, target: &str, msg: &str) {
     let is_chanmsg = target.starts_with('#');
     let user = message.source_nickname().unwrap();
     let mut num_processed = 0;

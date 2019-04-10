@@ -24,6 +24,7 @@ pub struct Features {
     pub send_notice: bool,
     pub history: bool,
     pub invite: bool,
+    pub autosave: bool,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
