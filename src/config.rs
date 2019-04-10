@@ -97,7 +97,7 @@ impl Conf {
     /// remove an IRC channel from the list of channels in the configuration
     pub fn remove_channel(&mut self, name: String) {
         if let Some(ref mut c) = self.client.channels {
-            if let Some(index) = c.iter().position(|r| r == &name) {
+            if let Some(index) = c.iter().position(|c| c == &name) {
                 c.remove(index);
             }
         }
